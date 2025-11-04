@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  buyer
+  seller
+  admin
+}
+model Auth {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  username       String
+  password       String
+  wallet_address String?   @unique
+  role           Role
+  setting        Json
+  nonce          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  listings       Listing[]     @relation("sellerListings")
+  ordersAsBuyer  Order[]       @relation("buyer")
+  ordersAsSeller Order[]       @relation("seller")
+  notifications  Notification[]  @relation("UserNotifications")
+}
+
+
+model Listing {
+  id         Int       @id @default(autoincrement())
+  title      String
+  description String
+  asset_id   String
+  seller_id  Int
+  price      Decimal   @db.Decimal(18, 2)
+  currency   String
+  status     Status    @default(Crypto)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  seller     Auth      @relation("sellerListings", fields: [seller_id], references: [id])
+  orders     Order[]   @relation("ListingOrders")
+  asset       Asset     @relation(fields: [asset_id], references: [id])
+}
+
+model Order {
+  id        Int          @id @default(autoincrement())
+  buyerId   Int
+  sellerId  Int
+  listingId Int?
+  amount    Decimal       @db.Decimal(18, 2)
+  status    OrderStatus   @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  buyer   Auth    @relation("buyer", fields: [buyerId], references: [id])
+  seller  Auth    @relation("seller", fields: [sellerId], references: [id])
+  listing Listing? @relation("ListingOrders", fields: [listingId], references: [id])
+}
+
+enum Status {
+  Crypto
+  Sports
+  Politics
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  type      String
+  payload   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  auth      Auth     @relation("UserNotifications", fields: [user_id], references: [id])
+}
+
+model Asset {
+  id          String   @id @default(uuid())        
+  public_id   String   @unique                     
+  url         String                               
+  created_at  DateTime @default(now())             
+  uploaded_by Int?                                 
+  type        String?                              
+  format      String?                              
+  size        Int?                                 
+
+  listings    Listing[]                            
+
+  @@index([public_id])
+  @@index([created_at])
+}
