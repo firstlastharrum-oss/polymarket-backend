@@ -106,10 +106,10 @@ export declare class ListingService {
                 createdAt: Date;
                 updatedAt: Date;
                 status: import("@prisma/client").$Enums.OrderStatus;
-                amount: import("@prisma/client/runtime/library").Decimal;
                 buyerId: number;
                 sellerId: number;
                 listingId: number | null;
+                amount: import("@prisma/client/runtime/library").Decimal;
             })[];
         } & {
             id: number;

@@ -6,11 +6,6 @@ export declare class ListingController {
         success: boolean;
         message: string;
         data: {
-            seller: {
-                id: number;
-                email: string;
-                username: string;
-            };
             asset: {
                 id: string;
                 public_id: string;
@@ -21,15 +16,20 @@ export declare class ListingController {
                 format: string | null;
                 size: number | null;
             };
+            seller: {
+                id: number;
+                email: string;
+                username: string;
+            };
         } & {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             description: string;
             price: import("@prisma/client/runtime/library").Decimal;
             currency: string;
             status: import("@prisma/client").$Enums.Status;
-            createdAt: Date;
-            updatedAt: Date;
-            id: number;
             asset_id: string;
             seller_id: number;
         };
@@ -37,10 +37,6 @@ export declare class ListingController {
     getAllListings(): Promise<{
         success: boolean;
         data: ({
-            seller: {
-                id: number;
-                username: string;
-            };
             asset: {
                 id: string;
                 public_id: string;
@@ -51,15 +47,19 @@ export declare class ListingController {
                 format: string | null;
                 size: number | null;
             };
+            seller: {
+                id: number;
+                username: string;
+            };
         } & {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             description: string;
             price: import("@prisma/client/runtime/library").Decimal;
             currency: string;
             status: import("@prisma/client").$Enums.Status;
-            createdAt: Date;
-            updatedAt: Date;
-            id: number;
             asset_id: string;
             seller_id: number;
         })[];
@@ -67,6 +67,16 @@ export declare class ListingController {
     getListingById(id: number): Promise<{
         success: boolean;
         data: {
+            asset: {
+                id: string;
+                public_id: string;
+                url: string;
+                created_at: Date;
+                uploaded_by: number | null;
+                type: string | null;
+                format: string | null;
+                size: number | null;
+            };
             seller: {
                 id: number;
                 email: string;
@@ -80,34 +90,24 @@ export declare class ListingController {
                     username: string;
                 };
             } & {
-                status: import("@prisma/client").$Enums.OrderStatus;
+                id: number;
                 createdAt: Date;
                 updatedAt: Date;
-                id: number;
+                status: import("@prisma/client").$Enums.OrderStatus;
                 buyerId: number;
                 sellerId: number;
                 listingId: number | null;
                 amount: import("@prisma/client/runtime/library").Decimal;
             })[];
-            asset: {
-                id: string;
-                public_id: string;
-                url: string;
-                created_at: Date;
-                uploaded_by: number | null;
-                type: string | null;
-                format: string | null;
-                size: number | null;
-            };
         } & {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             description: string;
             price: import("@prisma/client/runtime/library").Decimal;
             currency: string;
             status: import("@prisma/client").$Enums.Status;
-            createdAt: Date;
-            updatedAt: Date;
-            id: number;
             asset_id: string;
             seller_id: number;
         };

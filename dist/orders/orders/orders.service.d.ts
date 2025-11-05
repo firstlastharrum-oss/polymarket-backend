@@ -9,10 +9,10 @@ export declare class OrdersService {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.OrderStatus;
-            amount: import("@prisma/client/runtime/library").Decimal;
             buyerId: number;
             sellerId: number;
             listingId: number | null;
+            amount: import("@prisma/client/runtime/library").Decimal;
         };
     }>;
     getOrderById(id: number): Promise<{
@@ -59,10 +59,10 @@ export declare class OrdersService {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.OrderStatus;
-            amount: import("@prisma/client/runtime/library").Decimal;
             buyerId: number;
             sellerId: number;
             listingId: number | null;
+            amount: import("@prisma/client/runtime/library").Decimal;
         };
     }>;
     getOrdersByBuyer(buyerId: number): Promise<{
@@ -85,10 +85,10 @@ export declare class OrdersService {
             createdAt: Date;
             updatedAt: Date;
             status: import("@prisma/client").$Enums.OrderStatus;
-            amount: import("@prisma/client/runtime/library").Decimal;
             buyerId: number;
             sellerId: number;
             listingId: number | null;
+            amount: import("@prisma/client/runtime/library").Decimal;
         })[];
     }>;
 }
