@@ -49,5 +49,5 @@ appPromise = bootstrap();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const appServer = await appPromise;
-  appServer.emit('request', req, res);
+  return appServer(req, res);
 }
