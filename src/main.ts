@@ -4,8 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import * as crypto from 'crypto';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import express, { Request, Response } from 'express';
 
 const g1 = globalThis as unknown as { crypto?: typeof crypto };
 if (!g1.crypto) {
@@ -47,7 +46,7 @@ async function bootstrap() {
 
 appPromise = bootstrap();
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: Request, res: Response) {
   const appServer = await appPromise;
   return appServer(req, res);
 }
