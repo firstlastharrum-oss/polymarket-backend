@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConnectionService } from '../../src/connection/connection.service';
-import { BetStatus, EthicsVerdict, MatchStatus, PoolStatus, Side } from '@prisma/client';
+import { BetStatus, EthicsVerdict, MatchStatus, PoolStatus, Side } from '../../generated/prisma';
 import { GamificationService } from 'gamification/gamification/gamification.service';
 
 @Injectable()

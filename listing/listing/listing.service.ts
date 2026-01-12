@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Status, MatchStatus, PoolStatus } from '@prisma/client';
+import { Status, MatchStatus, PoolStatus } from '../../generated/prisma';
 import { ConnectionService } from 'src/connection/connection.service';
 import { OpenAI } from 'openai';
 import { MarketValidationService } from './market-validation.service';

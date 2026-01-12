@@ -1,5 +1,6 @@
 
-import { PrismaClient, PoolStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { PoolStatus } from '../generated/prisma';
 import { ethers } from 'ethers';
 import * as dotenv from 'dotenv';
 

@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, BadGatewayException, BadRequestException } from '@nestjs/common';
 import { ConnectionService } from 'src/connection/connection.service';
-import { OrderStatus, PoolStatus, Side } from '@prisma/client';
+import { OrderStatus, PoolStatus, Side } from '../../generated/prisma';
 
 @Injectable()
 export class OrdersService {

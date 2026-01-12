@@ -2,7 +2,7 @@
 import { BetsService } from '../bets/bets/bets.service';
 import { ConnectionService } from '../src/connection/connection.service';
 import { GamificationService } from '../gamification/gamification/gamification.service';
-import { BetStatus, PoolStatus, MatchStatus, EthicsVerdict } from '@prisma/client';
+import { BetStatus, PoolStatus, MatchStatus, EthicsVerdict } from '../generated/prisma';
 
 async function main() {
     console.log('Initializing services...');
