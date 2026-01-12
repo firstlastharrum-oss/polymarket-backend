@@ -17,7 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { ListingService } from './listing.service';
-import { Status } from '../../generated/prisma'; // Make sure "active" exists in enum
+import { Status } from '@prisma/client'; // Make sure "active" exists in enum
 import { JwtCookieAuthGuard } from './listing.guard';
 
 @Controller('listing')
