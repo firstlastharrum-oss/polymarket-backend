@@ -47,9 +47,16 @@ dotenv.config();
 let JwtCookieAuthGuard = class JwtCookieAuthGuard {
     canActivate(context) {
         const request = context.switchToHttp().getRequest();
-        const token = request.cookies?.access_token;
+        const authHeader = request.headers['authorization'] || request.headers['Authorization'];
+        let token;
+        if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+            token = authHeader.substring(7);
+        }
+        else {
+            token = request.cookies?.access_token;
+        }
         if (!token) {
-            throw new common_1.UnauthorizedException('Authentication token missing in cookies');
+            throw new common_1.UnauthorizedException('Authentication token missing');
         }
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);

@@ -45,7 +45,14 @@ const jwt = __importStar(require("jsonwebtoken"));
 let CookieAuthGuard = class CookieAuthGuard {
     async canActivate(context) {
         const request = context.switchToHttp().getRequest();
-        const token = request.cookies?.access_token;
+        let token;
+        const authHeader = request.headers['authorization'] || request.headers['Authorization'];
+        if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+            token = authHeader.substring(7);
+        }
+        if (!token) {
+            token = request.cookies?.jwt;
+        }
         if (!token) {
             throw new common_1.UnauthorizedException('Authentication token missing');
         }

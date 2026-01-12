@@ -1,16 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 enum Role {
@@ -18,6 +12,69 @@ enum Role {
   seller
   admin
 }
+
+enum Status {
+  Crypto
+  Sports
+  Politics
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum BetStatus {
+  PENDING
+  MATCHED
+  ACTIVE
+  CANCELLED
+  REJECTED
+}
+
+enum EthicsVerdict {
+  APPROVED
+  REJECTED
+  NEEDS_REVIEW
+}
+
+enum MatchStatus {
+  PENDING
+  MARKET_CREATED
+  RESOLVED
+  PAID
+}
+
+enum PoolStatus {
+  PENDING
+  LIVE
+  CLOSED
+  PROVISIONAL
+  DISPUTED
+  RESOLUTION_OPEN
+  RESOLUTION_CALCULATION
+  RESOLVED
+  RESOLVED_PENDING_CHALLENGE
+  UNDER_REVIEW
+  SETTLED
+  PAID_OUT
+  FINALIZED
+  CANCELLED
+}
+
+enum ProbabilityTag {
+  HIGH_PROBABILITY
+  MEDIUM_PROBABILITY
+  LOW_PROBABILITY
+  HIGHLY_SPECULATIVE
+}
+
+enum Side {
+  YES
+  NO
+}
+
 model Auth {
   id             Int       @id @default(autoincrement())
   email          String    @unique
@@ -34,24 +91,50 @@ model Auth {
   ordersAsBuyer  Order[]       @relation("buyer")
   ordersAsSeller Order[]       @relation("seller")
   notifications  Notification[]  @relation("UserNotifications")
+  betsCreated    Bet[]
+  balance        Balance?
+  poolsAsA       Pool[]        @relation("PoolUserA")
+  poolsAsB       Pool[]        @relation("PoolUserB")
+  positions      Position[]
+  resolutionVotes ResolutionVote[]
+  gamificationProfile GamificationProfile?
+  earnings       CreatorEarnings[]
 }
 
+model GamificationProfile {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  reputationScore Int      @default(50)
+  tier            String   @default("Bronze")
+  currentStreak   Int      @default(0)
+  maxStreak       Int      @default(0)
+  totalEarnings   Decimal  @default(0)
+  totalVolume     Decimal  @default(0)
+  betsCreated     Int      @default(0)
+  accuracy        Float    @default(0.0)
+  wins            Int      @default(0)
+  losses          Int      @default(0)
+  updatedAt       DateTime @updatedAt
+
+  user            Auth     @relation(fields: [userId], references: [id])
+}
 
 model Listing {
-  id         Int       @id @default(autoincrement())
-  title      String
+  id          Int       @id @default(autoincrement())
+  title       String
   description String
-  asset_id   String
-  seller_id  Int
-  price      Decimal   @db.Decimal(18, 2)
-  currency   String
-  status     Status    @default(Crypto)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  asset_id    String
+  seller_id   Int
+  price       Decimal
+  currency    String
+  status      Status    @default(Crypto)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  seller     Auth      @relation("sellerListings", fields: [seller_id], references: [id])
-  orders     Order[]   @relation("ListingOrders")
+  seller      Auth      @relation("sellerListings", fields: [seller_id], references: [id])
+  orders      Order[]   @relation("ListingOrders")
   asset       Asset     @relation(fields: [asset_id], references: [id])
+  pools       Pool[]
 }
 
 model Order {
@@ -59,7 +142,7 @@ model Order {
   buyerId   Int
   sellerId  Int
   listingId Int?
-  amount    Decimal       @db.Decimal(18, 2)
+  amount    Decimal
   status    OrderStatus   @default(PENDING)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
@@ -69,16 +152,66 @@ model Order {
   listing Listing? @relation("ListingOrders", fields: [listingId], references: [id])
 }
 
-enum Status {
-  Crypto
-  Sports
-  Politics
+model Bet {
+  id            Int           @id @default(autoincrement())
+  creatorId     Int
+  title         String
+  description   String
+  category      String
+  options       Json
+  choice        String?
+  stakeAmount   Decimal
+  currency      String
+  endDate       DateTime
+  status        BetStatus      @default(PENDING)
+  ethicsVerdict EthicsVerdict  @default(APPROVED)
+  probabilityTag ProbabilityTag @default(MEDIUM_PROBABILITY)
+  aiScore       Int?           @default(0) // Confidence score 0-100
+  aiAnalysis    Json?          // Stores reasoning, flags, and similarity data
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  creator       Auth           @relation(fields: [creatorId], references: [id])
+  matchesA      Match[]        @relation("BetA")
+  matchesB      Match[]        @relation("BetB")
+  
+  // Commission & Stats
+  creatorCommissionRate Float?   @default(0)
+  totalStake            Decimal  @default(0)
+  uniqueParticipants    Int      @default(0)
+  qualityScore          Float?   @default(0)
+  earnings              CreatorEarnings[]
 }
 
-enum OrderStatus {
-  PENDING
-  COMPLETED
-  CANCELLED
+model CreatorEarnings {
+  id               Int      @id @default(autoincrement())
+  marketId         Int
+  creatorId        Int
+  platformFee      Decimal
+  commissionEarned Decimal
+  status           String   @default("PENDING")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  bet              Bet      @relation(fields: [marketId], references: [id])
+  creator          Auth     @relation(fields: [creatorId], references: [id])
+}
+
+model Match {
+  id              Int         @id @default(autoincrement())
+  betAId          Int
+  betBId          Int?
+  marketId        String?
+  contractAddress String?
+  marketStartTime DateTime?
+  participants    Json?
+  status          MatchStatus @default(PENDING)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  betA            Bet         @relation("BetA", fields: [betAId], references: [id])
+  betB            Bet?        @relation("BetB", fields: [betBId], references: [id])
+  pool            Pool?
 }
 
 model Notification {
@@ -92,17 +225,117 @@ model Notification {
 }
 
 model Asset {
-  id          String   @id @default(uuid())        
-  public_id   String   @unique                     
-  url         String                               
-  created_at  DateTime @default(now())             
-  uploaded_by Int?                                 
-  type        String?                              
-  format      String?                              
-  size        Int?                                 
+  id          String   @id @default(uuid())
+  public_id   String   @unique
+  url         String
+  created_at  DateTime @default(now())
+  uploaded_by Int?
+  type        String?
+  format      String?
+  size        Int?
 
-  listings    Listing[]                            
+  listings    Listing[]
 
   @@index([public_id])
   @@index([created_at])
+}
+
+model Balance {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  available Decimal  @default(0)
+  locked    Decimal  @default(0)
+  updatedAt DateTime @updatedAt
+
+  user      Auth     @relation(fields: [userId], references: [id])
+}
+
+model Pool {
+  matchId         Int        @unique
+  marketId        String?
+  listingId       Int?
+  userAId         Int
+  userBId         Int?
+  stakeA          Decimal
+  stakeB          Decimal    @default(0)
+  totalYesAmount  Decimal    @default(0)
+  totalNoAmount   Decimal    @default(0)
+  totalPoolAmount Decimal    @default(0)
+  participantsCount Int      @default(0)
+  status          PoolStatus @default(LIVE)
+  outcome         String     @default("YES")
+  challengeDeadline DateTime?
+  challengeCount  Int        @default(0)
+  challengeBond   Decimal    @default(0)
+  challengerId    Int?
+  healthScore     Int        @default(0)
+  riskLabel       String     @default("High Risk")
+  closeTime       DateTime?
+  disputeDeadline DateTime?
+  disputeWindowHours Int     @default(12)
+  disputeMinStakePercent Decimal @default(0.02)
+  disputed        Boolean   @default(false)
+  disputeStakeTotal Decimal  @default(0)
+  resolutionDeadline DateTime?
+  resolutionYesStake Decimal @default(0)
+  resolutionNoStake  Decimal @default(0)
+  resolutionMinStakePercent Decimal @default(0.02)
+  resolutionWindowHours      Int     @default(12)
+  slashingRatePercent        Int     @default(50)
+  minResolutionParticipants  Int     @default(3)
+  resolutionEscalated        Boolean @default(false)
+  resolutionIncentivePercent Int     @default(0)
+  // Admin / settlement flags
+  isLocked        Boolean   @default(false)
+  adminFinalized  Boolean   @default(false)
+  settledAt       DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  match           Match      @relation(fields: [matchId], references: [id])
+  userA           Auth       @relation("PoolUserA", fields: [userAId], references: [id])
+  userB           Auth?      @relation("PoolUserB", fields: [userBId], references: [id])
+  listing         Listing?   @relation(fields: [listingId], references: [id])
+  positions       Position[]
+  resolutionVotes ResolutionVote[]
+
+  @@unique([listingId])
+}
+
+model ResolutionVote {
+  id        Int      @id @default(autoincrement())
+  poolId    Int
+  userId    Int
+  outcome   String
+  amount    Decimal
+  createdAt DateTime @default(now())
+  pool      Pool     @relation(fields: [poolId], references: [matchId])
+  user      Auth     @relation(fields: [userId], references: [id])
+  @@unique([poolId, userId])
+}
+
+model EventLog {
+  id         Int      @id @default(autoincrement())
+  type       String
+  refMatchId Int?
+  refPoolId  Int?
+  payload    Json?
+  createdAt  DateTime @default(now())
+}
+
+model Position {
+  id           Int      @id @default(autoincrement())
+  poolId       Int
+  userId       Int
+  side         Side
+  amount       Decimal
+  walletAddress String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  pool         Pool     @relation(fields: [poolId], references: [matchId])
+  user         Auth     @relation(fields: [userId], references: [id])
+
+  @@index([poolId])
+  @@index([userId])
 }

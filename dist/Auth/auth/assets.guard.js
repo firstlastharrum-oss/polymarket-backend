@@ -18,7 +18,13 @@ let JwtCookieAuthGuard = class JwtCookieAuthGuard {
     }
     canActivate(context) {
         const req = context.switchToHttp().getRequest();
-        const token = req.cookies?.jwt;
+        let token = req.cookies?.jwt;
+        if (!token) {
+            const authHeader = req.headers.authorization;
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                token = authHeader.substring(7);
+            }
+        }
         if (!token)
             throw new common_1.UnauthorizedException('No token found');
         try {

@@ -9,9 +9,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConnectionService = void 0;
 const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
+process.env.PRISMA_CLIENT_ENGINE_TYPE =
+    process.env.PRISMA_CLIENT_ENGINE_TYPE &&
+        process.env.PRISMA_CLIENT_ENGINE_TYPE !== 'wasm'
+        ? process.env.PRISMA_CLIENT_ENGINE_TYPE
+        : 'binary';
 let ConnectionService = class ConnectionService extends client_1.PrismaClient {
-    async onModule() {
-        return this.$connect();
+    async onModuleInit() {
+        await this.$connect();
     }
 };
 exports.ConnectionService = ConnectionService;

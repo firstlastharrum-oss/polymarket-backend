@@ -12,7 +12,16 @@ export class CookieAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
-    const token = request.cookies?.access_token;
+    // Prefer Authorization header: Bearer <token>
+    let token: string | undefined;
+    const authHeader = (request.headers as any)['authorization'] || (request.headers as any)['Authorization'];
+    if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    }
+    // Fallback to cookie
+    if (!token) {
+      token = request.cookies?.jwt as string | undefined;
+    }
 
     if (!token) {
       throw new UnauthorizedException('Authentication token missing');

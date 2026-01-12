@@ -14,10 +14,16 @@ dotenv.config();
 export class JwtCookieAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
-    const token = request.cookies?.access_token;
-
+    // Prefer Authorization header Bearer token, fallback to cookie
+    const authHeader = (request.headers as any)['authorization'] || (request.headers as any)['Authorization'];
+    let token: string | undefined;
+    if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    } else {
+      token = request.cookies?.access_token;
+    }
     if (!token) {
-      throw new UnauthorizedException('Authentication token missing in cookies');
+      throw new UnauthorizedException('Authentication token missing');
     }
 
     try {

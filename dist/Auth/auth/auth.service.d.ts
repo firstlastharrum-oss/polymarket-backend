@@ -10,6 +10,7 @@ export declare class AuthService {
         message: string;
         token: string;
         data: {
+            id: number;
             username: string;
             email: string;
             wallet_address: string | null;
@@ -19,6 +20,7 @@ export declare class AuthService {
     login(email: string, password: string, res: Response, wallet_address: string): Promise<{
         success: boolean;
         message: string;
+        token: string;
         data: {
             username: string;
             email: string;
@@ -36,6 +38,94 @@ export declare class AuthService {
         data: {
             wallet_address: string | null;
             token: string;
+            verified: boolean;
         };
+    }>;
+    updateProfile(userId: number, updateData: {
+        username?: string;
+        email?: string;
+        wallet_address?: string;
+    }): Promise<{
+        success: boolean;
+        message: string;
+        data: {
+            id: number;
+            email: string;
+            username: string;
+            wallet_address: string | null;
+            role: import("@prisma/client").$Enums.Role;
+            setting: import("@prisma/client/runtime/library").JsonValue;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+    }>;
+    changePassword(userId: number, currentPassword: string, newPassword: string): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    updatePreferences(userId: number, preferences: object): Promise<{
+        success: boolean;
+        message: string;
+        data: {
+            preferences: import("@prisma/client/runtime/library").JsonValue;
+        };
+    }>;
+    getWishlist(userId: number): Promise<{
+        success: boolean;
+        data: {
+            wishlist: any;
+        };
+    }>;
+    toggleWishlist(userId: number, listingId: number): Promise<{
+        success: boolean;
+        data: {
+            wishlist: number[];
+        };
+    }>;
+    getCurrentUser(userId: number): Promise<{
+        success: boolean;
+        data: {
+            balance: {
+                id: number;
+                updatedAt: Date;
+                userId: number;
+                available: import("@prisma/client/runtime/library").Decimal;
+                locked: import("@prisma/client/runtime/library").Decimal;
+            } | {
+                available: number;
+                locked: number;
+            };
+            id: number;
+            email: string;
+            username: string;
+            wallet_address: string | null;
+            role: import("@prisma/client").$Enums.Role;
+            setting: import("@prisma/client/runtime/library").JsonValue;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+    }>;
+    submitKyc(userId: number, documentUrl: string): Promise<{
+        success: boolean;
+        message: string;
+        data: {
+            id: number;
+            email: string;
+            username: string;
+            wallet_address: string | null;
+            role: import("@prisma/client").$Enums.Role;
+            setting: import("@prisma/client/runtime/library").JsonValue;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+    }>;
+    private validateKycData;
+    private isKycDuplicate;
+    private isAddress;
+    fundWallet(wallet_address: string, amountEth: number): Promise<{
+        success: boolean;
+        message: string;
+        txHash: any;
+        amount: number;
     }>;
 }

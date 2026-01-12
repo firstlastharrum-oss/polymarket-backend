@@ -35,6 +35,23 @@ let OrdersController = class OrdersController {
         const sellerId = listing.seller_id;
         return await this.ordersService.createOrder(buyerId, sellerId, listingId, amount);
     }
+    async placeBet(req, listingId, amount, choice) {
+        const buyerId = req.user?.id;
+        if (!buyerId || !listingId || !amount || !choice) {
+            throw new common_1.BadRequestException('Listing ID, amount and choice are required');
+        }
+        if (typeof choice !== 'string' || choice.trim().length < 2) {
+            throw new common_1.BadRequestException('Invalid choice');
+        }
+        const listing = await this.ordersService['connectionService'].listing.findUnique({
+            where: { id: listingId },
+            select: { seller_id: true },
+        });
+        if (!listing)
+            throw new common_1.BadRequestException('Invalid listing');
+        const sellerId = listing.seller_id;
+        return await this.ordersService.placeBet(buyerId, sellerId, listingId, Number(amount), String(choice).trim());
+    }
     async getOrderById(id) {
         if (!id)
             throw new common_1.BadRequestException('Order ID is required');
@@ -49,8 +66,8 @@ let OrdersController = class OrdersController {
 };
 exports.OrdersController = OrdersController;
 __decorate([
-    (0, common_1.UseGuards)(orders_guard_1.CookieAuthGuard),
     (0, common_1.Post)('create'),
+    (0, common_1.UseGuards)(orders_guard_1.CookieAuthGuard),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)('listingId')),
     __param(2, (0, common_1.Body)('amount')),
@@ -59,16 +76,27 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "createOrder", null);
 __decorate([
+    (0, common_1.Post)('bet'),
     (0, common_1.UseGuards)(orders_guard_1.CookieAuthGuard),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)('listingId')),
+    __param(2, (0, common_1.Body)('amount')),
+    __param(3, (0, common_1.Body)('choice')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number, Number, String]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "placeBet", null);
+__decorate([
     (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)(orders_guard_1.CookieAuthGuard),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getOrderById", null);
 __decorate([
-    (0, common_1.UseGuards)(orders_guard_1.CookieAuthGuard),
     (0, common_1.Get)(),
+    (0, common_1.UseGuards)(orders_guard_1.CookieAuthGuard),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

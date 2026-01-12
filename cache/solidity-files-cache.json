@@ -1,0 +1,154 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/harrum/Desktop/Work 1/Polymarket/poly-market/contracts/Market.sol": {
+      "lastModificationDate": 1767901197722,
+      "contentHash": "52d00076594cc1988057571437a1687a",
+      "sourceName": "contracts/Market.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Market"
+      ]
+    },
+    "/Users/harrum/Desktop/Work 1/Polymarket/poly-market/contracts/OracleMock.sol": {
+      "lastModificationDate": 1765279175541,
+      "contentHash": "b4e8acc6db55e0b2f47854bc0675f8bb",
+      "sourceName": "contracts/OracleMock.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "OracleMock"
+      ]
+    },
+    "/Users/harrum/Desktop/Work 1/Polymarket/poly-market/contracts/OracleTest.sol": {
+      "lastModificationDate": 1766952962798,
+      "contentHash": "ef09c1cbdd8401c569c605160876bb2d",
+      "sourceName": "contracts/OracleTest.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Betting"
+      ]
+    },
+    "/Users/harrum/Desktop/Work 1/Polymarket/poly-market/contracts/StakingOracle.sol": {
+      "lastModificationDate": 1767901200216,
+      "contentHash": "8c0639dbf566e62aad2038eb77e0bc8c",
+      "sourceName": "contracts/StakingOracle.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "IMarket",
+        "StakingOracle"
+      ]
+    }
+  }
+}
